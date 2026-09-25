@@ -79,4 +79,3 @@ def test_most_common_mood(client):
     assert response.status_code == 200
     assert b'5/5' in response.data
     assert '😄'.encode('utf-8') in response.data
-
