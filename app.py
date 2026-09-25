@@ -56,7 +56,11 @@ def home():
         entries=ENTRIES,
         average=average_mood(),
         most_common_mood=most_common_mood(),
-        commit_id=os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_SHA') or 'local-development',
+        commit_id=(
+            os.getenv('RENDER_GIT_COMMIT')
+            or os.getenv('GIT_SHA')
+            or 'local-development'
+        ),
         mood_labels=MOOD_LABELS,
     )
 
@@ -71,7 +75,11 @@ def add_entry():
             entries=ENTRIES,
             average=average_mood(),
             most_common_mood=most_common_mood(),
-            commit_id=os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_SHA') or 'local-development',
+            commit_id=(
+                os.getenv('RENDER_GIT_COMMIT')
+                or os.getenv('GIT_SHA')
+                or 'local-development'
+            ),
             mood_labels=MOOD_LABELS,
             error=error,
             form=request.form,
@@ -95,3 +103,4 @@ def health():
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=True)
+
