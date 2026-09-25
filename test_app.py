@@ -92,3 +92,16 @@ def test_future_date_is_rejected(client):
     assert response.status_code == 400
     assert len(ENTRIES) == 0
     assert b'Journal date cannot be in the future.' in response.data
+
+
+def test_empty_required_field_is_rejected(client):
+    response = client.post('/add', data={
+        'name': 'Harshit',
+        'entry_date': '2026-09-25',
+        'mood': '5',
+        'note': ''
+    })
+
+    assert response.status_code == 400
+    assert len(ENTRIES) == 0
+    assert b'All fields are required.' in response.data
