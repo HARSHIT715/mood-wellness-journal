@@ -36,16 +36,23 @@ def validate_entry(form):
 
     if not name or not entry_date or not note or not mood_raw:
         return None, 'All fields are required.'
+
     try:
         mood = int(mood_raw)
     except ValueError:
         return None, 'Mood must be a number from 1 to 5.'
+
     if mood not in MOOD_LABELS:
         return None, 'Mood must be a number from 1 to 5.'
+
     try:
-        datetime.strptime(entry_date, '%Y-%m-%d')
+        parsed_date = datetime.strptime(entry_date, '%Y-%m-%d')
     except ValueError:
         return None, 'Please enter a valid date.'
+
+    if parsed_date.date() > datetime.now().date():
+        return None, 'Journal date cannot be in the future.'
+
     return {'name': name, 'date': entry_date, 'note': note, 'mood': mood}, None
 
 
@@ -69,6 +76,7 @@ def home():
 def add_entry():
     global NEXT_ID
     entry, error = validate_entry(request.form)
+
     if error:
         return render_template(
             'index.html',
@@ -84,22 +92,23 @@ def add_entry():
             error=error,
             form=request.form,
         ), 400
+
     entry['id'] = NEXT_ID
     NEXT_ID += 1
     entry['emoji'] = MOOD_LABELS[entry['mood']]
     ENTRIES.insert(0, entry)
+
     return redirect(url_for('home'))
 
 
 @app.get('/api/entries')
 def api_entries():
-    return jsonify({'entries': ENTRIES, 'average_mood': average_mood()})
+    return jsonify({
+        'entries': ENTRIES,
+        'average_mood': average_mood()
+    })
 
 
 @app.get('/health')
 def health():
     return jsonify({'status': 'ok'})
-
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=int(os.getenv('PORT', 5000)), debug=True)
