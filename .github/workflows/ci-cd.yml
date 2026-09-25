@@ -1,0 +1,64 @@
+name: CI-CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Lint
+        run: flake8 .
+      - name: Test
+        run: pytest -v
+
+  build:
+    name: Build Docker and Smoke Test
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build image
+        run: docker build --build-arg GIT_SHA=${{ github.sha }} -t mood-wellness-journal:${{ github.sha }} .
+      - name: Start container
+        run: docker run -d --name mood-journal -p 5000:5000 mood-wellness-journal:${{ github.sha }}
+      - name: Smoke test health endpoint
+        run: |
+          for i in {1..20}; do
+            if curl --fail http://localhost:5000/health; then exit 0; fi
+            sleep 2
+          done
+          docker logs mood-journal
+          exit 1
+      - name: Stop container
+        if: always()
+        run: docker rm -f mood-journal || true
+
+  deploy:
+    name: Deploy to Render
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK" ]; then
+            echo "RENDER_DEPLOY_HOOK secret is not configured."
+            exit 1
+          fi
+          curl --fail --show-error --silent -X POST "$RENDER_DEPLOY_HOOK&ref=${{ github.sha }}"

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mood & Wellness Journal</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="container">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">DAILY WELLNESS</p>
+        <h1>Mood & Wellness Journal</h1>
+        <p class="subtitle">Track how your days feel, one journal entry at a time.</p>
+      </div>
+      <div class="stat-card">
+        <span>Average mood</span>
+        <strong>{{ average if average is not none else '—' }}</strong>
+        <small>out of 5</small>
+      </div>
+    </header>
+
+    <section class="grid">
+      <section class="panel form-panel">
+        <h2>Add today's entry</h2>
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        <form method="post" action="{{ url_for('add_entry') }}">
+          <label for="name">Name</label>
+          <input id="name" name="name" required value="{{ form.get('name', '') if form else '' }}" placeholder="Your name">
+
+          <label for="entry_date">Date</label>
+          <input id="entry_date" type="date" name="entry_date" required value="{{ form.get('entry_date', '') if form else '' }}">
+
+          <label for="mood">Mood</label>
+          <select id="mood" name="mood" required>
+            <option value="">Choose a mood</option>
+            {% for value, emoji in mood_labels.items() %}
+              <option value="{{ value }}" {% if form and form.get('mood') == value|string %}selected{% endif %}>{{ value }} — {{ emoji }}</option>
+            {% endfor %}
+          </select>
+
+          <label for="note">Journal note</label>
+          <textarea id="note" name="note" rows="5" required placeholder="What made today feel this way?">{{ form.get('note', '') if form else '' }}</textarea>
+
+          <button type="submit">Save entry</button>
+        </form>
+      </section>
+
+      <section class="panel entries-panel">
+        <div class="section-heading">
+          <h2>Recent entries</h2>
+          <a href="{{ url_for('api_entries') }}">JSON API</a>
+        </div>
+        {% if entries %}
+          <div class="entries">
+            {% for entry in entries %}
+            <article class="entry">
+              <div class="entry-top">
+                <div>
+                  <h3>{{ entry.name }} {{ entry.emoji }}</h3>
+                  <time>{{ entry.date }}</time>
+                </div>
+                <span class="mood">{{ entry.mood }}/5</span>
+              </div>
+              <p>{{ entry.note }}</p>
+            </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty">No entries yet. Add your first journal entry.</div>
+        {% endif %}
+      </section>
+    </section>
+
+    <footer>
+      <span>Flask • pytest • Docker • GitHub Actions</span>
+      <span>Commit: <code>{{ commit_id[:7] }}</code></span>
+    </footer>
+  </main>
+</body>
+</html>
