@@ -27,3 +27,42 @@ time { color: #7b8496; font-size: .85rem; }
 footer { display: flex; justify-content: space-between; gap: 15px; color: #7b8496; font-size: .82rem; margin-top: 25px; }
 code { background: #e9edf5; padding: 3px 6px; border-radius: 5px; }
 @media (max-width: 800px) { .hero, footer { flex-direction: column; align-items: flex-start; } .grid { grid-template-columns: 1fr; } .stat-card { width: 100%; } }
+.how-it-works {
+    margin-top: 40px;
+}
+
+.how-it-works h2 {
+    margin-bottom: 20px;
+}
+
+.steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.steps > div {
+    padding: 20px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.steps span {
+    display: inline-flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 700;
+}
+
+.steps h3 {
+    margin: 14px 0 8px;
+}
+
+.steps p {
+    margin: 0;
+    line-height: 1.6;
+}
