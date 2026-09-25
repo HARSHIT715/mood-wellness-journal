@@ -15,6 +15,19 @@ def average_mood():
     return round(sum(entry['mood'] for entry in ENTRIES) / len(ENTRIES), 1)
 
 
+def most_common_mood():
+    if not ENTRIES:
+        return '—'
+
+    mood_counts = {}
+    for entry in ENTRIES:
+        mood = entry['mood']
+        mood_counts[mood] = mood_counts.get(mood, 0) + 1
+
+    most_common = max(mood_counts, key=mood_counts.get)
+    return f'{most_common}/5 {MOOD_LABELS[most_common]}'
+
+
 def validate_entry(form):
     name = form.get('name', '').strip()
     entry_date = form.get('entry_date', '').strip()
@@ -42,6 +55,7 @@ def home():
         'index.html',
         entries=ENTRIES,
         average=average_mood(),
+        most_common_mood=most_common_mood(),
         commit_id=os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_SHA') or 'local-development',
         mood_labels=MOOD_LABELS,
     )
@@ -56,6 +70,7 @@ def add_entry():
             'index.html',
             entries=ENTRIES,
             average=average_mood(),
+            most_common_mood=most_common_mood(),
             commit_id=os.getenv('RENDER_GIT_COMMIT') or os.getenv('GIT_SHA') or 'local-development',
             mood_labels=MOOD_LABELS,
             error=error,
