@@ -79,3 +79,16 @@ def test_most_common_mood(client):
     assert response.status_code == 200
     assert b'5/5' in response.data
     assert '😄'.encode('utf-8') in response.data
+
+
+def test_future_date_is_rejected(client):
+    response = client.post('/add', data={
+        'name': 'Harshit',
+        'entry_date': '2099-12-31',
+        'mood': '5',
+        'note': 'Future date test.'
+    })
+
+    assert response.status_code == 400
+    assert len(ENTRIES) == 0
+    assert b'Journal date cannot be in the future.' in response.data
