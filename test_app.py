@@ -64,3 +64,18 @@ def test_api_returns_entries(client):
     response = client.get('/api/entries')
     assert response.status_code == 200
     assert len(response.get_json()['entries']) == 1
+
+
+def test_most_common_mood(client):
+    for mood in ('5', '5', '3'):
+        client.post('/add', data={
+            'name': 'Mood User',
+            'entry_date': '2026-09-25',
+            'mood': mood,
+            'note': 'Mood summary test.'
+        })
+
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b'5/5' in response.data
+    assert '😄'.encode('utf-8') in response.data

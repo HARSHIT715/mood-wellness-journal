@@ -1,3 +1,4 @@
+```html
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,10 +15,17 @@
         <h1>Mood & Wellness Journal</h1>
         <p class="subtitle">Track how your days feel, one journal entry at a time.</p>
       </div>
+
       <div class="stat-card">
         <span>Average mood</span>
         <strong>{{ average if average is not none else '—' }}</strong>
         <small>out of 5</small>
+      </div>
+
+      <div class="summary-card">
+        <h2>Mood Summary</h2>
+        <p>Total entries: <strong>{{ entries|length }}</strong></p>
+        <p>Most common mood: <strong>{{ most_common_mood }}</strong></p>
       </div>
     </header>
 
@@ -25,6 +33,7 @@
       <section class="panel form-panel">
         <h2>Add today's entry</h2>
         {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
         <form method="post" action="{{ url_for('add_entry') }}">
           <label for="name">Name</label>
           <input id="name" name="name" required value="{{ form.get('name', '') if form else '' }}" placeholder="Your name">
@@ -52,6 +61,7 @@
           <h2>Recent entries</h2>
           <a href="{{ url_for('api_entries') }}">JSON API</a>
         </div>
+
         {% if entries %}
           <div class="entries">
             {% for entry in entries %}
@@ -71,30 +81,31 @@
           <div class="empty">No entries yet. Add your first journal entry.</div>
         {% endif %}
       </section>
-      
     </section>
+
     <section class="how-it-works">
-    <h2>How it works</h2>
-    <div class="steps">
+      <h2>How it works</h2>
+
+      <div class="steps">
         <div>
-            <span>1</span>
-            <h3>Reflect</h3>
-            <p>Record how your day felt and write a short note.</p>
+          <span>1</span>
+          <h3>Reflect</h3>
+          <p>Record how your day felt and write a short note.</p>
         </div>
 
         <div>
-            <span>2</span>
-            <h3>Track</h3>
-            <p>Your mood history is displayed directly on the journal.</p>
+          <span>2</span>
+          <h3>Track</h3>
+          <p>Your mood history is displayed directly on the journal.</p>
         </div>
 
         <div>
-            <span>3</span>
-            <h3>Understand</h3>
-            <p>Use the average mood to see your overall wellness trend.</p>
+          <span>3</span>
+          <h3>Understand</h3>
+          <p>Use the average mood to see your overall wellness trend.</p>
         </div>
-    </div>
-</section>
+      </div>
+    </section>
 
     <footer>
       <span>Flask • pytest • Docker • GitHub Actions</span>
@@ -103,3 +114,4 @@
   </main>
 </body>
 </html>
+
